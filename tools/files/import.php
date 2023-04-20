@@ -32,6 +32,26 @@ $incoming_contents = $ch->getIncomingDirectoryContents();
 <script src="/js/dropzone.js"></script>
 <link rel="stylesheet" href="/css/dropzone.css">
 
+<div style="display: none" id="dialog-buttons-multiple">
+	<?php
+		print $h->button_js(t('Edit Properties'), 'finishUploads();', 'right', 'finish-btn primary', array('disabled' => true, 'class' => 'finish-btn'));
+		print $h->button_js(t('Cancel'), 'jQuery.fn.dialog.closeTop();', 'left', null);
+	?>
+</div>
+
+<div style="display: none" id="dialog-buttons-incoming">
+	<?php
+		print $form->submit('submit', t('Import Files'), array('onclick' => "jQuery.fn.dialog.showLoader();$('#ccm-file-manager-multiple-incoming').submit()", 'class' => 'primary ccm-button-right'));
+	?>
+</div>
+
+<div id="dialog-buttons-remote" style="display: none">
+	<?php
+		print $form->submit('submit', t('Import Files'), array('onclick' => "jQuery.fn.dialog.showLoader();$('#ccm-file-manager-multiple-remote').submit()", 'class' => 'primary ccm-button-right'));
+	?>
+</div>
+
+
 <div id="multiple-file-wrapper" class="ccm-ui">
 	<ul class="tabs" id="ccm-file-import-tabs">
 		<li class="active"><a href="javascript:void(0)" id="ccm-file-add-multiple"><?php echo t('Upload Multiple')?></a></li>
@@ -51,7 +71,7 @@ $incoming_contents = $ch->getIncomingDirectoryContents();
 		<div id="dropzone" class="dropzone"></div>
 		<div class="dialog-buttons">
 			<?php
-			print $h->button_js(t('Finish'), 'finishUploads();', 'right', 'primary', array('id' => 'finish', 'disabled' => true));
+			print $h->button_js(t('Edit Properties'), 'finishUploads();', 'right', 'finish-btn primary', array('disabled' => true));
 			print $h->button_js(t('Cancel'), 'jQuery.fn.dialog.closeTop();', 'left', null);
 			?>
 		</div>
@@ -100,11 +120,11 @@ $incoming_contents = $ch->getIncomingDirectoryContents();
 			<input type="hidden" name="ocID" value="<?php echo $ocID?>" />
 			<p><?php echo t('Enter URL to valid file(s)')?></p>
 			<?php echo $valt->output('import_remote');?>
-			<?php echo $form->text('url_upload_1', array('style' => 'width:455px'))?><br/><br/>
-			<?php echo $form->text('url_upload_2', array('style' => 'width:455px'))?><br/><br/>
-			<?php echo $form->text('url_upload_3', array('style' => 'width:455px'))?><br/><br/>
-			<?php echo $form->text('url_upload_4', array('style' => 'width:455px'))?><br/><br/>
-			<?php echo $form->text('url_upload_5', array('style' => 'width:455px'))?><br/>
+			<?php echo $form->text('url_upload_1', array('style' => 'width:98%'))?><br/><br/>
+			<?php echo $form->text('url_upload_2', array('style' => 'width:98%'))?><br/><br/>
+			<?php echo $form->text('url_upload_3', array('style' => 'width:98%'))?><br/><br/>
+			<?php echo $form->text('url_upload_4', array('style' => 'width:98%'))?><br/><br/>
+			<?php echo $form->text('url_upload_5', array('style' => 'width:98%'))?><br/>
 		</form>
 	</div>
 </div>
@@ -157,7 +177,6 @@ $incoming_contents = $ch->getIncomingDirectoryContents();
 <script type="text/javascript">
 	var ccm_fiActiveTab = "ccm-file-add-multiple";
 	$("#ccm-file-import-tabs a").click(function() {
-
 		$("li.active").removeClass('active');
 		var activesection = ccm_fiActiveTab.substring(13);
 		var wind = $(this).parentsUntil('.ui-dialog').parent();
@@ -174,11 +193,10 @@ $incoming_contents = $ch->getIncomingDirectoryContents();
 
 		$(this).parent().addClass("active");
 		$("#" + ccm_fiActiveTab + "-tab").show();
-		var section = $(this).attr('id').substring(13);
 
+		var section = $(this).attr('id').substring(13);
 		var buttons = $("#dialog-buttons-" + section);
 		bp.html(buttons.html());
-
 	});
 
 	Dropzone.autoDiscover = false;
@@ -195,15 +213,15 @@ $incoming_contents = $ch->getIncomingDirectoryContents();
 		clickable: true,
 		init: function() {
 			this.on("addedfile", function(file, serverData) {
-				document.getElementById('finish').disabled = true;
+				$('.finish-btn').prop('disabled', true);
 			});
 			this.on("success", function(file, response) {
 				var serverData = JSON.parse(response);
 				ccm_uploadedFiles.push(serverData['id']);
-				document.getElementById('finish').disabled = true;
+				$('.finish-btn').prop('disabled', true);
 			});
 			this.on("queuecomplete", function(file) {
-				document.getElementById('finish').disabled = false;
+				$('.finish-btn').prop('disabled', false);
 			});
 		},
 	});
